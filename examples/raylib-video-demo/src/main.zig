@@ -20,7 +20,7 @@ pub fn main() !void {
         .msaa_4x_hint = true,
         .vsync_hint = true,
     });
-    rl.setTraceLogLevel(.log_warning);
+    rl.setTraceLogLevel(.warning);
     rl.initWindow(1024, 768, "Introducing Clay Demo");
     defer rl.closeWindow();
 
@@ -40,7 +40,7 @@ pub fn main() !void {
     cl.setMeasureTextFunction(renderer.measureText);
 
     renderer.fonts[FONT_ID_BODY_16] = rl.cdef.LoadFontEx("resources/Roboto-Regular.ttf", 48, 0, 400);
-    rl.setTextureFilter(renderer.fonts[FONT_ID_BODY_16].?.texture, .texture_filter_bilinear);
+    rl.setTextureFilter(renderer.fonts[FONT_ID_BODY_16].?.texture, .bilinear);
 
     while (!rl.windowShouldClose()) {
         cl.setLayoutDimensions(.{
@@ -50,7 +50,7 @@ pub fn main() !void {
 
         const mousePosition = rl.getMousePosition();
         const scrollDelta = rl.getMouseWheelMoveV();
-        cl.setPointerState(mousePosition, rl.isMouseButtonDown(.mouse_button_left));
+        cl.setPointerState(mousePosition, rl.isMouseButtonDown(.left));
         cl.updateScrollContainers(true, scrollDelta, rl.getFrameTime());
 
         const content_background_config = cl.RectangleConfig{
@@ -59,7 +59,7 @@ pub fn main() !void {
         };
 
         // Toggle the inspector with spacebar
-        if (rl.isKeyPressed(.key_space)) cl.setDebugModeEnabled(!cl.isDebugModeEnabled());
+        if (rl.isKeyPressed(.space)) cl.setDebugModeEnabled(!cl.isDebugModeEnabled());
 
         cl.beginLayout();
         if (cl.open(.{
@@ -253,7 +253,7 @@ fn handleSidebarInteraction(
     element_id: cl.ElementId,
     pointer_data: cl.PointerData,
     user_data: usize,
-) callconv(.C) void {
+) callconv(.c) void {
     _ = element_id;
 
     // If this button was clicked

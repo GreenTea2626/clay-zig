@@ -8,17 +8,29 @@ pub fn build(b: *std.Build) void {
     // Main app
     const exe = b.addExecutable(.{
         .name = "raylib-video-demo",
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
     });
     b.installArtifact(exe);
+
+    // resources
+    {
+        const install_resources = b.addInstallDirectory(.{
+            .source_dir = b.path("resources"),
+            .install_dir = .bin,
+            .install_subdir = "resources",
+        });
+        b.getInstallStep().dependOn(&install_resources.step);
+    }
 
     { // Dependencies
         const raylib_dep = b.dependency("raylib-zig", .{
             .target = target,
             .optimize = optimize,
-            .shared = true,
+            .linkage = .static,
         });
         exe.root_module.addImport("raylib", raylib_dep.module("raylib"));
         exe.linkLibrary(raylib_dep.artifact("raylib"));
@@ -42,9 +54,7 @@ pub fn build(b: *std.Build) void {
     }
     { // Test command
         const unit_tests = b.addTest(.{
-            .root_source_file = b.path("src/main.zig"),
-            .target = target,
-            .optimize = optimize,
+            .root_module = exe.root_module,
         });
 
         const run_unit_tests = b.addRunArtifact(unit_tests);

@@ -17,11 +17,11 @@ pub const cdef = struct {
     pub extern fn Clay_GetElementIdWithIndex(id_string: String, index: u32) ElementId;
     pub extern fn Clay_GetElementIdLocalWithIndex(id_string: String, index: i32) ElementId;
     pub extern fn Clay_Hovered() bool;
-    pub extern fn Clay_OnHover(on_hover_function: *const fn (ElementId, PointerData, usize) callconv(.C) void, user_data: usize) void;
+    pub extern fn Clay_OnHover(on_hover_function: *const fn (ElementId, PointerData, usize) callconv(.c) void, user_data: usize) void;
     pub extern fn Clay_PointerOver(element_id: ElementId) bool;
     pub extern fn Clay_GetScrollContainerData(id: ElementId) ScrollContainerData;
-    pub extern fn Clay_SetMeasureTextFunction(measure_text_function: *const fn (*String, *TextConfig) callconv(.C) Dimensions) void;
-    pub extern fn Clay_SetQueryScrollOffsetFunction(query_scroll_offset_function: *const fn (u32) callconv(.C) Vector2) void;
+    pub extern fn Clay_SetMeasureTextFunction(measure_text_function: *const fn (*String, *TextConfig) callconv(.c) Dimensions) void;
+    pub extern fn Clay_SetQueryScrollOffsetFunction(query_scroll_offset_function: *const fn (u32) callconv(.c) Vector2) void;
     pub extern fn Clay_RenderCommandArray_Get(array: *RenderCommandArray, index: i32) *RenderCommand;
     pub extern fn Clay_IsDebugModeEnabled() bool;
     pub extern fn Clay_SetDebugModeEnabled(enabled: bool) void;
@@ -507,10 +507,10 @@ pub const ErrorData = extern struct {
 };
 
 pub const ErrorHandler = extern struct {
-    function: *const fn (ErrorData) callconv(.C) void = &defaultHandler,
+    function: *const fn (ErrorData) callconv(.c) void = &defaultHandler,
     user_data: ?*anyopaque = null,
 
-    fn defaultHandler(data: ErrorData) callconv(.C) void {
+    fn defaultHandler(data: ErrorData) callconv(.c) void {
         std.debug.print("[ERROR]: '{s}', '{s}'\n", .{ @tagName(data.error_type), data.error_text.slice() });
     }
 };
@@ -569,7 +569,7 @@ pub fn IdLocalWithIndex(id_string: []const u8, index: usize) ElementId {
 /// Set the function used to compute the size of text in pixels.
 pub fn setMeasureTextFunction(comptime measureTextFn: fn ([]const u8, *TextConfig) Dimensions) void {
     const Fn = struct {
-        pub fn measureText(text_: *String, config: *TextConfig) callconv(.C) Dimensions {
+        pub fn measureText(text_: *String, config: *TextConfig) callconv(.c) Dimensions {
             return measureTextFn(text_.slice(), config);
         }
     };
